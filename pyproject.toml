@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "project1-astar"
+name = "src"
 version = "0.1.0"
 description = ""
 authors = ["domnu-raul <sir.c4ppuccin0@gmail.com>"]
@@ -16,5 +16,3 @@ pytest = "^8.3.3"
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
 
-[tool.poetry.scripts]
-pytest = "pytest:main"

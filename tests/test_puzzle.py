@@ -1,7 +1,6 @@
 import os
 import sys
-sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'src'))
-from puzzle import Puzzle, Vector2, Direction
+from src.puzzle import Puzzle, Vector2, Direction
 
 
 def test_puzzle():
