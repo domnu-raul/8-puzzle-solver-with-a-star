@@ -165,3 +165,33 @@ def test_move_right_2():
     ]
 
     assert puzzle.grid == expected_grid
+
+def test_is_solved():
+    puzzle = Puzzle([
+        [0, 1, 2],
+        [3, 4, 5],
+        [6, 7, 8]
+    ])
+
+    assert puzzle.is_solved == True
+
+def test_is_solved_2():
+    puzzle = Puzzle([
+        [1, 0, 2],
+        [3, 4, 5],
+        [6, 7, 8]
+    ])
+
+    assert puzzle.is_solved == False
+
+def test_scramble_puzzle():
+    puzzle = Puzzle()
+    puzzle.scramble()
+    print(puzzle.grid)
+    assert puzzle.is_solved == False
+
+def test_scramble_puzzle_2():
+    puzzle = Puzzle()
+    puzzle.scramble()
+    print(puzzle.grid)
+    assert puzzle.is_solved == False
