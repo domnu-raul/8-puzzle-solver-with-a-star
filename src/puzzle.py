@@ -56,6 +56,7 @@ class Puzzle:
             return
 
         square = self.get_square(position)
+
         if square == 0:
             return
 
@@ -65,6 +66,10 @@ class Puzzle:
             return
 
         other_square = self.get_square(other_position)
+
+        if other_square != 0:
+            self.move(other_position, direction)
+            other_square = self.get_square(other_position)
 
         if other_square == 0:
             self._grid[other_position.y][other_position.x] = square
