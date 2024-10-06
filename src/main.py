@@ -11,8 +11,8 @@ player_pos = pygame.Vector2(screen.get_width() / 2, screen.get_height() / 2)
 puzzle = Puzzle()
 puzzle.scramble()
 
-grid_start = pygame.Vector2(screen.get_width() / 3, 100)
 cell_size = screen.get_width() / 9
+grid_start = pygame.Vector2(screen.get_width() / 3, (screen.get_height() - cell_size * 3) // 2)
 font = pygame.font.Font(None, 36)
 timer = 0
 
@@ -21,7 +21,7 @@ while running:
         if event.type == pygame.QUIT:
             running = False
 
-    screen.fill("red")
+    screen.fill("black")
     
     for y, row in enumerate(puzzle.grid):
         for x, cell in enumerate(row):
