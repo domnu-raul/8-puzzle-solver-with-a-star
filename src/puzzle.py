@@ -2,6 +2,7 @@ from enum import Enum
 from typing import List, Optional
 from random import choice
 
+
 class Vector2:
     def __init__(self, x: int, y: int):
         self.x = x
@@ -103,7 +104,8 @@ class Puzzle:
 
     def scramble(self, moves: int = 32):
         for _ in range(moves):
-            directions = [Direction.UP, Direction.DOWN, Direction.LEFT, Direction.RIGHT]
+            directions = [Direction.UP, Direction.DOWN,
+                          Direction.LEFT, Direction.RIGHT]
             for direction in directions:
                 bound = self.empty_position + direction.value
                 if bound.x < 0 or bound.x >= 3 or bound.y < 0 or bound.y >= 3:
@@ -111,11 +113,20 @@ class Puzzle:
 
                 direction_chosen = choice(directions).value
 
-                self.move(self.empty_position + direction_chosen, -direction_chosen)
+                self.move(self.empty_position +
+                          direction_chosen, -direction_chosen)
 
     def manhattan_distance(self, position: Vector2) -> int:
         square = self.get_square(position)
 
         target = Vector2(square % 3, square // 3)
         return abs(position.x - target.x) + abs(position.y - target.y)
-            
+
+    def manhattan_heuristic(self) -> int:
+        distance = 0
+        for y in range(3):
+            for x in range(3):
+                position = Vector2(x, y)
+                distance += self.manhattan_distance(position)
+
+        return distance

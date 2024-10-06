@@ -1,5 +1,3 @@
-import os
-import sys
 from src.puzzle import Puzzle, Vector2, Direction
 
 
@@ -17,6 +15,7 @@ def test_puzzle_2():
     ]
 
     assert puzzle.grid == expected_grid
+
 
 def test_puzzle_3():
     puzzle = Puzzle([
@@ -62,6 +61,7 @@ def test_move_up():
 
     assert puzzle.grid == expected_grid
 
+
 def test_move_down():
     puzzle = Puzzle([
         [3, 1, 2],
@@ -78,6 +78,7 @@ def test_move_down():
     ]
 
     assert puzzle.grid == expected_grid
+
 
 def test_move_left():
     puzzle = Puzzle([
@@ -96,6 +97,7 @@ def test_move_left():
 
     assert puzzle.grid == expected_grid
 
+
 def test_move_right():
     puzzle = Puzzle([
         [1, 0, 2],
@@ -112,6 +114,7 @@ def test_move_right():
     ]
 
     assert puzzle.grid == expected_grid
+
 
 def test_move_up_2():
     puzzle = Puzzle([
@@ -130,6 +133,7 @@ def test_move_up_2():
 
     assert puzzle.grid == expected_grid
 
+
 def test_move_down_2():
     puzzle = Puzzle([
         [3, 1, 2],
@@ -146,6 +150,7 @@ def test_move_down_2():
     ]
 
     assert puzzle.grid == expected_grid
+
 
 def test_move_left_2():
     puzzle = Puzzle([
@@ -164,6 +169,7 @@ def test_move_left_2():
 
     assert puzzle.grid == expected_grid
 
+
 def test_move_right_2():
     puzzle = Puzzle([
         [1, 2, 0],
@@ -181,6 +187,7 @@ def test_move_right_2():
 
     assert puzzle.grid == expected_grid
 
+
 def test_is_solved():
     puzzle = Puzzle([
         [0, 1, 2],
@@ -189,6 +196,7 @@ def test_is_solved():
     ])
 
     assert puzzle.is_solved == True
+
 
 def test_is_solved_2():
     puzzle = Puzzle([
@@ -199,17 +207,20 @@ def test_is_solved_2():
 
     assert puzzle.is_solved == False
 
+
 def test_scramble_puzzle():
     puzzle = Puzzle()
     puzzle.scramble()
     print(puzzle.grid)
     assert puzzle.is_solved == False
 
+
 def test_scramble_puzzle_2():
     puzzle = Puzzle()
     puzzle.scramble()
     print(puzzle.grid)
     assert puzzle.is_solved == False
+
 
 def test_manhattan_distance():
     puzzle = Puzzle([
@@ -221,10 +232,10 @@ def test_manhattan_distance():
     assert puzzle.manhattan_distance(Vector2(0, 0)) == 1
     assert puzzle.manhattan_distance(Vector2(2, 2)) == 4
 
+
 def test_manhattan_distance_2():
     puzzle = Puzzle()
 
     for x in range(3):
         for y in range(3):
             assert puzzle.manhattan_distance(Vector2(x, y)) == 0
-
