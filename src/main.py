@@ -1,5 +1,5 @@
 import pygame
-from src.puzzle import Puzzle, Direction, Vector2
+from src.puzzle import Puzzle, Direction
 
 pygame.init()
 screen = pygame.display.set_mode((1280, 720))
@@ -46,16 +46,6 @@ while running:
 
             pos = font.render(str(cell), True, "black")
             screen.blit(pos, (cell_start.x + (cell_size // 2 - 5), cell_start.y + (cell_size // 2 - 10)))
-
-    # keys = pygame.key.get_pressed()
-    # if keys[pygame.K_s]:
-    #     puzzle.move(puzzle.empty_position + Direction.UP.value, Direction.DOWN)
-    # if keys[pygame.K_w]:
-    #     puzzle.move(puzzle.empty_position + Direction.DOWN.value, Direction.UP)
-    # if keys[pygame.K_d]:
-    #     puzzle.move(puzzle.empty_position + Direction.LEFT.value, Direction.RIGHT)
-    # if keys[pygame.K_a]:
-    #     puzzle.move(puzzle.empty_position + Direction.RIGHT.value, Direction.LEFT)
 
     pygame.display.flip()
 
