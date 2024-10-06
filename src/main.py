@@ -14,7 +14,6 @@ puzzle.scramble()
 cell_size = screen.get_width() / 9
 grid_start = pygame.Vector2(screen.get_width() / 3, (screen.get_height() - cell_size * 3) // 2)
 font = pygame.font.Font(None, 36)
-timer = 0
 
 while running:
     for event in pygame.event.get():
