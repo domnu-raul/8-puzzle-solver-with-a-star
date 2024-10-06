@@ -1,4 +1,5 @@
 import pygame
+from src.puzzle import Puzzle, Direction, Vector2
 
 pygame.init()
 screen = pygame.display.set_mode((1280, 720))
@@ -7,35 +8,47 @@ running = True
 dt = 0
 
 player_pos = pygame.Vector2(screen.get_width() / 2, screen.get_height() / 2)
+puzzle = Puzzle()
+puzzle.scramble()
+
+grid_start = pygame.Vector2(screen.get_width() / 3, 100)
+cell_size = screen.get_width() / 9
+font = pygame.font.Font(None, 36)
+timer = 0
 
 while running:
-    # poll for events
-    # pygame.QUIT event means the user clicked X to close your window
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
 
-    # fill the screen with a color to wipe away anything from last frame
-    screen.fill("purple")
+    screen.fill("red")
+    
+    for y, row in enumerate(puzzle.grid):
+        for x, cell in enumerate(row):
 
-    pygame.draw.circle(screen, "red", player_pos, 40)
+            cell_start = pygame.Vector2(grid_start.x + x * cell_size, grid_start.y + y * cell_size)
+            rect = pygame.Rect(cell_start.x, cell_start.y, cell_size - 5, cell_size - 5)
+
+            pygame.draw.rect(screen, "white", rect)
+
+            if cell == 0:
+                continue
+
+            pos = font.render(str(cell), True, "black")
+            screen.blit(pos, (cell_start.x + (cell_size // 2 - 5), cell_start.y + (cell_size // 2 - 10)))
 
     keys = pygame.key.get_pressed()
-    if keys[pygame.K_w]:
-        player_pos.y -= 300 * dt
     if keys[pygame.K_s]:
-        player_pos.y += 300 * dt
-    if keys[pygame.K_a]:
-        player_pos.x -= 300 * dt
+        puzzle.move(puzzle.empty_position + Direction.UP.value, Direction.DOWN)
+    if keys[pygame.K_w]:
+        puzzle.move(puzzle.empty_position + Direction.DOWN.value, Direction.UP)
     if keys[pygame.K_d]:
-        player_pos.x += 300 * dt
+        puzzle.move(puzzle.empty_position + Direction.LEFT.value, Direction.RIGHT)
+    if keys[pygame.K_a]:
+        puzzle.move(puzzle.empty_position + Direction.RIGHT.value, Direction.LEFT)
 
-    # flip() the display to put your work on screen
     pygame.display.flip()
 
-    # limits FPS to 60
-    # dt is delta time in seconds since last frame, used for framerate-
-    # independent physics.
-    dt = clock.tick(60) / 1000
+    dt = clock.tick(10) / 1000
 
 pygame.quit()
