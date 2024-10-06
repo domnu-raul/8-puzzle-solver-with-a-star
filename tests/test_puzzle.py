@@ -18,6 +18,21 @@ def test_puzzle_2():
 
     assert puzzle.grid == expected_grid
 
+def test_puzzle_3():
+    puzzle = Puzzle([
+        [1, 4, 2],
+        [3, 0, 5],
+        [6, 7, 8]
+    ])
+
+    expected_grid = [
+        [1, 4, 2],
+        [3, 0, 5],
+        [6, 7, 8]
+    ]
+
+    assert puzzle.grid == expected_grid
+
 
 def test_get_square():
     puzzle = Puzzle()
@@ -195,3 +210,21 @@ def test_scramble_puzzle_2():
     puzzle.scramble()
     print(puzzle.grid)
     assert puzzle.is_solved == False
+
+def test_manhattan_distance():
+    puzzle = Puzzle([
+        [1, 2, 3],
+        [4, 5, 6],
+        [7, 8, 0]
+    ])
+
+    assert puzzle.manhattan_distance(Vector2(0, 0)) == 1
+    assert puzzle.manhattan_distance(Vector2(2, 2)) == 4
+
+def test_manhattan_distance_2():
+    puzzle = Puzzle()
+
+    for x in range(3):
+        for y in range(3):
+            assert puzzle.manhattan_distance(Vector2(x, y)) == 0
+
