@@ -100,7 +100,9 @@ class Puzzle:
         self.move(-direction)
         return distance
 
-    def scramble(self, moves: int = 32) -> None:
+    def scramble(self, moves: int = 48) -> None:
+        """Scrambles the puzzle by making a given number(default 48) of random moves.
+        If the puzzle is already solved, it will scramble it again."""
         for _ in range(moves):
             directions = [Direction.UP, Direction.DOWN,
                           Direction.LEFT, Direction.RIGHT]
@@ -113,13 +115,19 @@ class Puzzle:
 
                 self.move(direction_chosen)
 
+        if self.is_solved:
+            self.scramble(moves)
+
     def manhattan_distance(self, position: Vector2) -> int:
+        """Returns the manhattan distance of the given position to its target position."""
         square = self.get_square(position)
 
         target = Vector2(square % 3, square // 3)
         return abs(position.x - target.x) + abs(position.y - target.y)
 
     def manhattan_heuristic(self) -> int:
+        """Returns the manhattan distance of the puzzle.
+        The sum of the manhattan distances of all squares."""
         distance = 0
         for y in range(3):
             for x in range(3):
