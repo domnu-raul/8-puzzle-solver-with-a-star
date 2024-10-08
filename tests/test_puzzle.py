@@ -186,8 +186,8 @@ def test_solve():
         [6, 7, 8]
     ])
 
-    cost = puzzle.solve()
-    assert cost == 2
+    moves = puzzle.solve(True)
+    assert len(moves) == 2
     assert puzzle.is_solved == True
 
 
@@ -198,14 +198,26 @@ def test_solve_2():
         [6, 8, 0]
     ])
 
-    cost = puzzle.solve()
-    assert cost == 4
+    moves = puzzle.solve(True)
+    assert len(moves) == 4
     assert puzzle.is_solved == True
 
 
 def test_solve_3():
     puzzle = Puzzle()
-    puzzle.scramble(5)
+    puzzle.scramble(4)
 
-    cost = puzzle.solve()
+    puzzle.solve(True)
+    assert puzzle.is_solved == True
+
+
+def test_solve_4():
+    puzzle = Puzzle([
+        [7, 2, 4],
+        [5, 0, 6],
+        [8, 3, 1]
+    ])
+
+    moves = puzzle.solve(True)
+    assert len(moves) == 26
     assert puzzle.is_solved == True

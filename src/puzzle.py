@@ -1,6 +1,7 @@
 from enum import Enum
-from typing import List, Optional
+from typing import List, Optional, Tuple
 from random import choice
+import heapq
 
 
 class Vector2:
@@ -22,6 +23,9 @@ class Vector2:
 
     def __str__(self):
         return f"({self.x}, {self.y})"
+
+    def __lt__(self, other):
+        return True
 
     def __repr__(self):
         return str(self)
@@ -138,31 +142,83 @@ class Puzzle:
 
         return distance
 
-    def solve(self) -> int:
-        """Solves the puzzle using the A* algorithm with the manhattan heuristic.
-        Still in development, not working properly yet. Returns the cost of the solution."""
+    @staticmethod
+    def manhattan_heuristic_grid(grid: List[List[int]]) -> int:
+        """Returns the manhattan distance of the given grid."""
+        distance = 0
+        for y in range(3):
+            for x in range(3):
+                square = grid[y][x]
+                target_x, target_y = square % 3, square // 3
+                distance += abs(x - target_x) + abs(y - target_y)
 
-        g_cost = 0
-        h_cost = self.manhattan_heuristic()
+        return distance
+
+    def try_move_simulation(self, grid: List[List[int]], empty_position: Vector2, direction: Vector2) -> tuple[List[List[int]], Vector2] | tuple[None, None]:
+        """Simulates a move in the given grid and returns the new grid and empty position if the move is valid, None otherwise."""
+        other_position = empty_position + direction
+
+        if other_position.x < 0 or other_position.x >= 3 or other_position.y < 0 or other_position.y >= 3:
+            return None, None
+
+        new_grid = [row[:] for row in grid]
+        new_grid[empty_position.y][empty_position.x] = new_grid[other_position.y][other_position.x]
+        new_grid[other_position.y][other_position.x] = 0
+
+        return new_grid, other_position
+
+    def _grid_to_tuple(self, grid: Optional[List[List[int]]] = None):
+        """Convert the grid to a tuple for use in a set (for visited states)."""
+        if grid:
+            return tuple(tuple(row) for row in grid)
+
+        return tuple(tuple(row) for row in self._grid)
+
+    def solve(self, apply: Optional[bool] = False) -> List[Vector2]:
+        """Solves the puzzle using the A* algorithm with the manhattan heuristic.
+        Returns the cost of the solution.
+        _________________________________
+
+        apply : if True, the solution will be applied on the puzzle, else, only the moves will be returned.
+        """
+
+        pq = []
+        initial_state = [row[:] for row in self._grid]  # deep copy of the grid
+        heapq.heappush(pq, (0 + self.manhattan_heuristic(), [],
+                       initial_state, self._empty_position))
+
+        visited = set()
+        visited.add(self._grid_to_tuple())
 
         directions = [Direction.UP.value, Direction.DOWN.value,
                       Direction.LEFT.value, Direction.RIGHT.value]
 
-        last_direction = Vector2(0, 0)
-        while not self.is_solved:
-            moves = [(move, cost) for move in directions if (
-                cost := self.try_move(move)) != -1]
+        while pq:
+            f_cost, moves, grid, empty_position = heapq.heappop(pq)
+            g_cost = len(moves)
 
-            for i, (move, cost) in enumerate(moves):
-                if -move == last_direction:
-                    moves.pop(i)
-                    break
+            if g_cost == f_cost:
+                if apply:
+                    self._grid = grid
+                    self._empty_position = Vector2(0, 0)
 
-            best_move, _ = min(moves, key=lambda x: x[1])
-            last_direction = best_move
+                return moves
 
-            self.move(best_move)
-            g_cost += 1
-            h_cost = self.manhattan_heuristic()
+            for direction in directions:
+                new_grid, new_empty_position = self.try_move_simulation(
+                    grid, empty_position, direction)
 
-        return g_cost
+                if new_grid is None:
+                    continue
+
+                new_grid_tuple = self._grid_to_tuple(new_grid)
+                if new_grid_tuple in visited:
+                    continue
+
+                visited.add(new_grid_tuple)
+
+                new_moves = moves + [direction]
+                heapq.heappush(pq, (g_cost + 1 + Puzzle.manhattan_heuristic_grid(new_grid),
+                                    new_moves, new_grid, new_empty_position))
+
+        return []
