@@ -19,15 +19,18 @@ while running:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
-        if event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_s:
-                puzzle.move(puzzle.empty_position + Direction.UP.value, Direction.DOWN)
-            if event.key == pygame.K_w:
-                puzzle.move(puzzle.empty_position + Direction.DOWN.value, Direction.UP)
-            if event.key == pygame.K_d:
-                puzzle.move(puzzle.empty_position + Direction.LEFT.value, Direction.RIGHT)
-            if event.key == pygame.K_a:
-                puzzle.move(puzzle.empty_position + Direction.RIGHT.value, Direction.LEFT)
+        elif event.type == pygame.KEYDOWN:
+            match event.key:
+                case pygame.K_s:
+                    puzzle.move(Direction.DOWN)
+                case pygame.K_w:
+                    puzzle.move(Direction.UP)
+                case pygame.K_d:
+                    puzzle.move(Direction.RIGHT)
+                case pygame.K_a:
+                    puzzle.move(Direction.LEFT)
+                case _:
+                    pass
 
 
     screen.fill("black")

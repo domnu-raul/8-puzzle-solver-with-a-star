@@ -74,33 +74,45 @@ class Puzzle:
     def get_square(self, position: Vector2):
         return self._grid[position.y][position.x]
 
-    def move(self, position: Vector2, direction: Direction | Vector2):
+    # def move(self, position: Vector2, direction: Direction | Vector2):
+    #     if isinstance(direction, Direction):
+    #         direction = direction.value
+    #
+    #     if position.x < 0 or position.x >= 3 or position.y < 0 or position.y >= 3:
+    #         return
+    #
+    #     square = self.get_square(position)
+    #
+    #     if square == 0:
+    #         return
+    #
+    #     other_position = position + direction
+    #
+    #     if other_position.x < 0 or other_position.x >= 3 or other_position.y < 0 or other_position.y >= 3:
+    #         return
+    #
+    #     other_square = self.get_square(other_position)
+    #
+    #     if other_square != 0:
+    #         self.move(other_position, direction)
+    #         other_square = self.get_square(other_position)
+    #
+    #     if other_square == 0:
+    #         self._grid[other_position.y][other_position.x] = square
+    #         self._grid[position.y][position.x] = 0
+    #         self._empty_position = position
+
+    def move(self, direction: Direction | Vector2):
         if isinstance(direction, Direction):
             direction = direction.value
 
-        if position.x < 0 or position.x >= 3 or position.y < 0 or position.y >= 3:
-            return
-
-        square = self.get_square(position)
-
-        if square == 0:
-            return
-
-        other_position = position + direction
-
+        other_position = self.empty_position + direction
         if other_position.x < 0 or other_position.x >= 3 or other_position.y < 0 or other_position.y >= 3:
             return
 
-        other_square = self.get_square(other_position)
-
-        if other_square != 0:
-            self.move(other_position, direction)
-            other_square = self.get_square(other_position)
-
-        if other_square == 0:
-            self._grid[other_position.y][other_position.x] = square
-            self._grid[position.y][position.x] = 0
-            self._empty_position = position
+        self._grid[self.empty_position.y][self.empty_position.x] = \
+            self.get_square(other_position)
+        self._grid[other_position.y][other_position.x] = 0
 
     def scramble(self, moves: int = 32):
         for _ in range(moves):
@@ -113,8 +125,7 @@ class Puzzle:
 
                 direction_chosen = choice(directions).value
 
-                self.move(self.empty_position +
-                          direction_chosen, -direction_chosen)
+                self.move(direction_chosen)
 
     def manhattan_distance(self, position: Vector2) -> int:
         square = self.get_square(position)
