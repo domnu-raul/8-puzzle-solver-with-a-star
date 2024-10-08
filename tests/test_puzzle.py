@@ -116,6 +116,26 @@ def test_move_left():
     assert puzzle.grid == expected_grid
 
 
+def test_try_move():
+    puzzle = Puzzle([
+        [1, 4, 2],
+        [3, 0, 5],
+        [6, 7, 8]
+    ])
+
+    assert puzzle.try_move(Direction.UP) == 2
+    assert puzzle.manhattan_heuristic() == 4
+
+    assert puzzle.try_move(Direction.DOWN) == 6
+    assert puzzle.manhattan_heuristic() == 4
+
+    assert puzzle.try_move(Direction.LEFT) == 4
+    assert puzzle.manhattan_heuristic() == 4
+
+    assert puzzle.try_move(Direction.RIGHT) == 6
+    assert puzzle.manhattan_heuristic() == 4
+
+
 def test_is_solved():
     puzzle = Puzzle([
         [0, 1, 2],
@@ -167,3 +187,12 @@ def test_manhattan_distance_2():
     for x in range(3):
         for y in range(3):
             assert puzzle.manhattan_distance(Vector2(x, y)) == 0
+
+
+def test_manhattan_heuristic():
+
+    puzzle = Puzzle([[1, 4, 2],
+                     [0, 3, 5],
+                     [6, 7, 8]])
+
+    assert puzzle.manhattan_heuristic() == 4

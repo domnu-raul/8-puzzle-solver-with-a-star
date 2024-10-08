@@ -55,15 +55,15 @@ class Puzzle:
             self._empty_position = Vector2(0, 0)
 
     @property
-    def empty_position(self):
+    def empty_position(self) -> Vector2:
         return self._empty_position
 
     @property
-    def grid(self):
+    def grid(self) -> List[List[int]]:
         return self._grid
 
     @property
-    def is_solved(self):
+    def is_solved(self) -> bool:
         for y in range(3):
             for x in range(3):
                 if self._grid[y][x] != y * 3 + x:
@@ -71,38 +71,10 @@ class Puzzle:
 
         return True
 
-    def get_square(self, position: Vector2):
+    def get_square(self, position: Vector2) -> int:
         return self._grid[position.y][position.x]
 
-    # def move(self, position: Vector2, direction: Direction | Vector2):
-    #     if isinstance(direction, Direction):
-    #         direction = direction.value
-    #
-    #     if position.x < 0 or position.x >= 3 or position.y < 0 or position.y >= 3:
-    #         return
-    #
-    #     square = self.get_square(position)
-    #
-    #     if square == 0:
-    #         return
-    #
-    #     other_position = position + direction
-    #
-    #     if other_position.x < 0 or other_position.x >= 3 or other_position.y < 0 or other_position.y >= 3:
-    #         return
-    #
-    #     other_square = self.get_square(other_position)
-    #
-    #     if other_square != 0:
-    #         self.move(other_position, direction)
-    #         other_square = self.get_square(other_position)
-    #
-    #     if other_square == 0:
-    #         self._grid[other_position.y][other_position.x] = square
-    #         self._grid[position.y][position.x] = 0
-    #         self._empty_position = position
-
-    def move(self, direction: Direction | Vector2):
+    def move(self, direction: Direction | Vector2) -> None:
         if isinstance(direction, Direction):
             direction = direction.value
 
@@ -114,7 +86,18 @@ class Puzzle:
             self.get_square(other_position)
         self._grid[other_position.y][other_position.x] = 0
 
-    def scramble(self, moves: int = 32):
+        self._empty_position = other_position
+
+    def try_move(self, direction: Direction | Vector2) -> int:
+        if isinstance(direction, Direction):
+            direction = direction.value
+
+        self.move(direction)
+        distance = self.manhattan_heuristic()
+        self.move(-direction)
+        return distance
+
+    def scramble(self, moves: int = 32) -> None:
         for _ in range(moves):
             directions = [Direction.UP, Direction.DOWN,
                           Direction.LEFT, Direction.RIGHT]
