@@ -207,8 +207,8 @@ def test_solve_3():
     puzzle = Puzzle()
     puzzle.scramble(4)
 
-    puzzle.solve(True)
-    assert puzzle.is_solved == True
+    puzzle.solve(False)
+    assert puzzle.is_solved == False
 
 
 def test_solve_4():

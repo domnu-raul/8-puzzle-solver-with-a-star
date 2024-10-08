@@ -16,6 +16,7 @@ cell_size = screen.get_width() / 9
 grid_start = pygame.Vector2(screen.get_width() / 3,
                             (screen.get_height() - cell_size * 3) // 2)
 font = pygame.font.Font(None, 36)
+rect_color = (255, 255, 255)
 timer = 0
 
 while running:
@@ -43,10 +44,11 @@ while running:
 
             cell_start = pygame.Vector2(
                 grid_start.x + x * cell_size, grid_start.y + y * cell_size)
+
             rect = pygame.Rect(cell_start.x, cell_start.y,
                                cell_size - 5, cell_size - 5)
 
-            pygame.draw.rect(screen, "white", rect)
+            pygame.draw.rect(screen, rect_color, rect)
 
             if cell == 0:
                 continue
@@ -55,10 +57,13 @@ while running:
             screen.blit(pos, (cell_start.x + (cell_size // 2 - 5),
                         cell_start.y + (cell_size // 2 - 10)))
 
-    if timer > 1 and moves:
+    if timer > 0.15 and moves:
         move = moves.pop(0)
         puzzle.move(move)
         timer = 0
+
+    if not moves:
+        rect_color = (0, 255, 0)
 
     pygame.display.flip()
 
