@@ -45,7 +45,7 @@ def test_get_square_2():
     assert square == 4
 
 
-def test_move_down():
+def test_move():
     puzzle = Puzzle([
         [0, 1, 2],
         [3, 4, 5],
@@ -58,62 +58,43 @@ def test_move_down():
         [0, 4, 5],
         [6, 7, 8]
     ]
-
     assert puzzle.grid == expected_grid
-
-
-def test_move_up():
-    puzzle = Puzzle([
-        [3, 1, 2],
-        [0, 4, 5],
-        [6, 7, 8]
-    ])
-
-    puzzle.move(Direction.UP)
-
-    expected_grid = [
-        [0, 1, 2],
-        [3, 4, 5],
-        [6, 7, 8]
-    ]
-
-    assert puzzle.grid == expected_grid
-
-
-def test_move_right():
-    puzzle = Puzzle([
-        [0, 1, 2],
-        [3, 4, 5],
-        [6, 7, 8]
-    ])
 
     puzzle.move(Direction.RIGHT)
-
     expected_grid = [
-        [1, 0, 2],
-        [3, 4, 5],
+        [3, 1, 2],
+        [4, 0, 5],
+        [6, 7, 8]
+    ]
+    assert puzzle.grid == expected_grid
+
+    puzzle.move(Direction.UP)
+    expected_grid = [
+        [3, 0, 2],
+        [4, 1, 5],
+        [6, 7, 8]
+    ]
+    assert puzzle.grid == expected_grid
+
+    puzzle.move(Direction.LEFT)
+    expected_grid = [
+        [0, 3, 2],
+        [4, 1, 5],
         [6, 7, 8]
     ]
 
-    assert puzzle.grid == expected_grid
 
-
-def test_move_left():
+def test_move_2():
     puzzle = Puzzle([
-        [1, 0, 2],
-        [3, 4, 5],
+        [0, 4, 2],
+        [1, 3, 5],
         [6, 7, 8]
     ])
 
-    puzzle.move(Direction.LEFT)
-
-    expected_grid = [
-        [0, 1, 2],
-        [3, 4, 5],
-        [6, 7, 8]
-    ]
-
-    assert puzzle.grid == expected_grid
+    assert puzzle.move(Direction.UP) == False
+    assert puzzle.move(Direction.LEFT) == False
+    assert puzzle.move(Direction.RIGHT) == True
+    assert puzzle.move(Direction.DOWN) == True
 
 
 def test_try_move():

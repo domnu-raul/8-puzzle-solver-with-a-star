@@ -12,7 +12,8 @@ puzzle = Puzzle()
 puzzle.scramble()
 
 cell_size = screen.get_width() / 9
-grid_start = pygame.Vector2(screen.get_width() / 3, (screen.get_height() - cell_size * 3) // 2)
+grid_start = pygame.Vector2(screen.get_width() / 3,
+                            (screen.get_height() - cell_size * 3) // 2)
 font = pygame.font.Font(None, 36)
 
 while running:
@@ -22,24 +23,25 @@ while running:
         elif event.type == pygame.KEYDOWN:
             match event.key:
                 case pygame.K_s:
-                    puzzle.move(Direction.DOWN)
-                case pygame.K_w:
                     puzzle.move(Direction.UP)
+                case pygame.K_w:
+                    puzzle.move(Direction.DOWN)
                 case pygame.K_d:
-                    puzzle.move(Direction.RIGHT)
-                case pygame.K_a:
                     puzzle.move(Direction.LEFT)
+                case pygame.K_a:
+                    puzzle.move(Direction.RIGHT)
                 case _:
                     pass
 
-
     screen.fill("black")
-    
+
     for y, row in enumerate(puzzle.grid):
         for x, cell in enumerate(row):
 
-            cell_start = pygame.Vector2(grid_start.x + x * cell_size, grid_start.y + y * cell_size)
-            rect = pygame.Rect(cell_start.x, cell_start.y, cell_size - 5, cell_size - 5)
+            cell_start = pygame.Vector2(
+                grid_start.x + x * cell_size, grid_start.y + y * cell_size)
+            rect = pygame.Rect(cell_start.x, cell_start.y,
+                               cell_size - 5, cell_size - 5)
 
             pygame.draw.rect(screen, "white", rect)
 
@@ -47,7 +49,8 @@ while running:
                 continue
 
             pos = font.render(str(cell), True, "black")
-            screen.blit(pos, (cell_start.x + (cell_size // 2 - 5), cell_start.y + (cell_size // 2 - 10)))
+            screen.blit(pos, (cell_start.x + (cell_size // 2 - 5),
+                        cell_start.y + (cell_size // 2 - 10)))
 
     pygame.display.flip()
 

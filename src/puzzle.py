@@ -74,21 +74,24 @@ class Puzzle:
     def get_square(self, position: Vector2) -> int:
         return self._grid[position.y][position.x]
 
-    def move(self, direction: Direction | Vector2) -> None:
+    def move(self, direction: Direction | Vector2) -> bool:
+        """Moves the empty square in the given direction. Returns True if the move was successful, False otherwise."""
         if isinstance(direction, Direction):
             direction = direction.value
 
         other_position = self.empty_position + direction
         if other_position.x < 0 or other_position.x >= 3 or other_position.y < 0 or other_position.y >= 3:
-            return
+            return False
 
         self._grid[self.empty_position.y][self.empty_position.x] = \
             self.get_square(other_position)
         self._grid[other_position.y][other_position.x] = 0
 
         self._empty_position = other_position
+        return True
 
     def try_move(self, direction: Direction | Vector2) -> int:
+        """Returns the manhattan distance of the puzzle after moving in the given direction."""
         if isinstance(direction, Direction):
             direction = direction.value
 
