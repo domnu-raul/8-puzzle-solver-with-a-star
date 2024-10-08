@@ -95,7 +95,9 @@ class Puzzle:
         if isinstance(direction, Direction):
             direction = direction.value
 
-        self.move(direction)
+        if not self.move(direction):
+            return -1
+
         distance = self.manhattan_heuristic()
         self.move(-direction)
         return distance
@@ -135,3 +137,32 @@ class Puzzle:
                 distance += self.manhattan_distance(position)
 
         return distance
+
+    def solve(self) -> int:
+        """Solves the puzzle using the A* algorithm with the manhattan heuristic.
+        Still in development, not working properly yet. Returns the cost of the solution."""
+
+        g_cost = 0
+        h_cost = self.manhattan_heuristic()
+
+        directions = [Direction.UP.value, Direction.DOWN.value,
+                      Direction.LEFT.value, Direction.RIGHT.value]
+
+        last_direction = Vector2(0, 0)
+        while not self.is_solved:
+            moves = [(move, cost) for move in directions if (
+                cost := self.try_move(move)) != -1]
+
+            for i, (move, cost) in enumerate(moves):
+                if -move == last_direction:
+                    moves.pop(i)
+                    break
+
+            best_move, _ = min(moves, key=lambda x: x[1])
+            last_direction = best_move
+
+            self.move(best_move)
+            g_cost += 1
+            h_cost = self.manhattan_heuristic()
+
+        return g_cost

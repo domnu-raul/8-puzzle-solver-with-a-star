@@ -177,3 +177,35 @@ def test_manhattan_heuristic():
                      [6, 7, 8]])
 
     assert puzzle.manhattan_heuristic() == 4
+
+
+def test_solve():
+    puzzle = Puzzle([
+        [1, 4, 2],
+        [3, 0, 5],
+        [6, 7, 8]
+    ])
+
+    cost = puzzle.solve()
+    assert cost == 2
+    assert puzzle.is_solved == True
+
+
+def test_solve_2():
+    puzzle = Puzzle([
+        [1, 4, 2],
+        [3, 7, 5],
+        [6, 8, 0]
+    ])
+
+    cost = puzzle.solve()
+    assert cost == 4
+    assert puzzle.is_solved == True
+
+
+def test_solve_3():
+    puzzle = Puzzle()
+    puzzle.scramble(5)
+
+    cost = puzzle.solve()
+    assert puzzle.is_solved == True
