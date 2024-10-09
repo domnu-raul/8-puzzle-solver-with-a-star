@@ -10,32 +10,39 @@ dt = 0
 player_pos = pygame.Vector2(screen.get_width() / 2, screen.get_height() / 2)
 puzzle = Puzzle()
 puzzle.scramble()
-moves = puzzle.solve()
 
 cell_size = screen.get_width() / 9
-grid_start = pygame.Vector2(screen.get_width() / 3,
+grid_start = pygame.Vector2(screen.get_width() / 3 * 2 - 100,
                             (screen.get_height() - cell_size * 3) // 2)
+
+button_size = pygame.Vector2(400, 150)
+button_gap = 20
+buttons_start = pygame.Vector2(
+    100, (screen.get_height() - button_size.y * 2 - button_gap) // 2)
+
+scramble_button = pygame.Rect(
+    buttons_start.x, buttons_start.y, button_size.x, button_size.y)
+solve_button = pygame.Rect(
+    buttons_start.x, buttons_start.y + 170, button_size.x, button_size.y)
+
+
 font = pygame.font.Font(None, 36)
 rect_color = (255, 255, 255)
 timer = 0
 
+moves = []
 while running:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
-        # elif event.type == pygame.KEYDOWN:
-        #     match event.key:
-        #         case pygame.K_s:
-        #             puzzle.move(Direction.UP)
-        #         case pygame.K_w:
-        #             puzzle.move(Direction.DOWN)
-        #         case pygame.K_d:
-        #             puzzle.move(Direction.LEFT)
-        #         case pygame.K_a:
-        #             puzzle.move(Direction.RIGHT)
-        #         case _:
-        #             pass
-        #
+        elif event.type == pygame.MOUSEBUTTONDOWN:
+            if scramble_button.collidepoint(event.pos):
+                puzzle.scramble()
+                rect_color = (255, 255, 255)
+                moves = []
+            elif solve_button.collidepoint(event.pos):
+                moves = puzzle.solve()
+
     screen.fill("black")
     timer += dt
 
@@ -57,12 +64,20 @@ while running:
             screen.blit(pos, (cell_start.x + (cell_size // 2 - 5),
                         cell_start.y + (cell_size // 2 - 10)))
 
+    pygame.draw.rect(screen, "white", scramble_button)
+    pygame.draw.rect(screen, "white", solve_button)
+
+    scramble_text = font.render("Scramble", True, "black")
+    solve_text = font.render("Solve", True, "black")
+    screen.blit(scramble_text, (buttons_start.x + 100, buttons_start.y + 50))
+    screen.blit(solve_text, (buttons_start.x + 100, buttons_start.y + 220))
+
     if timer > 0.15 and moves:
         move = moves.pop(0)
         puzzle.move(move)
         timer = 0
 
-    if not moves:
+    if puzzle.is_solved:
         rect_color = (0, 255, 0)
 
     pygame.display.flip()
