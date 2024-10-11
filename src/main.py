@@ -28,22 +28,34 @@ solve_button = pygame.Rect(
 scramble_button_color = (255, 255, 255)
 solve_button_color = (255, 255, 255)
 
-font = pygame.font.Font(None, 36)
+font = pygame.font.Font(None, 62)
 rect_color = (255, 255, 255)
 timer = 0
 
 moves = []
+can_move = True
 while running:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
+        elif event.type == pygame.KEYDOWN and can_move:
+            if event.key == pygame.K_w:
+                puzzle.move(Direction.DOWN)
+            elif event.key == pygame.K_s:
+                puzzle.move(Direction.UP)
+            elif event.key == pygame.K_a:
+                puzzle.move(Direction.RIGHT)
+            elif event.key == pygame.K_d:
+                puzzle.move(Direction.LEFT)
         elif event.type == pygame.MOUSEBUTTONDOWN:
             if scramble_button.collidepoint(event.pos):
                 puzzle.scramble()
                 rect_color = (255, 255, 255)
                 moves = []
+                can_move = True
             elif solve_button.collidepoint(event.pos):
                 moves = puzzle.solve()
+                can_move = False
         elif event.type == pygame.MOUSEMOTION:
             if scramble_button.collidepoint(event.pos):
                 scramble_button_color = (200, 200, 200)
@@ -55,7 +67,7 @@ while running:
             else:
                 solve_button_color = (255, 255, 255)
 
-    screen.fill("black")
+    screen.fill((50, 50, 50))
     timer += dt
 
     for y, row in enumerate(puzzle.grid):
