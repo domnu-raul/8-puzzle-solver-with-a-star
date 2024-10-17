@@ -106,7 +106,7 @@ class Puzzle:
         self.move(-direction)
         return distance
 
-    def scramble(self, moves: int = 48) -> None:
+    def scramble(self, moves: int = 96) -> None:
         """Scrambles the puzzle by making a given number(default 48) of random moves.
         If the puzzle is already solved, it will scramble it again."""
         for _ in range(moves):
@@ -185,7 +185,6 @@ class Puzzle:
         pq = []
         initial_state = [row[:] for row in self._grid]  # deep copy of the grid
 
-        # the heap is used as a stack, contains:
         # f_cost, moves(the moves that were used to get there, the length of this list is the g_cost), grid, empty_position
         heapq.heappush(pq, (0 + self.manhattan_heuristic(), [],
                        initial_state, self._empty_position))
