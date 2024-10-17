@@ -2,6 +2,7 @@ from enum import Enum
 from typing import List, Optional, Tuple
 from random import choice
 import heapq
+from dataclasses import dataclass
 
 
 class Vector2:
@@ -94,18 +95,6 @@ class Puzzle:
         self._empty_position = other_position
         return True
 
-    def try_move(self, direction: Direction | Vector2) -> int:
-        """Returns the manhattan distance of the puzzle after moving in the given direction."""
-        if isinstance(direction, Direction):
-            direction = direction.value
-
-        if not self.move(direction):
-            return -1
-
-        distance = self.manhattan_heuristic()
-        self.move(-direction)
-        return distance
-
     def scramble(self, moves: int = 96) -> None:
         """Scrambles the puzzle by making a given number(default 48) of random moves.
         If the puzzle is already solved, it will scramble it again."""
@@ -124,26 +113,37 @@ class Puzzle:
         if self.is_solved:
             self.scramble(moves)
 
-    def manhattan_distance(self, position: Vector2) -> int:
-        """Returns the manhattan distance of the given position to its target position."""
-        square = self.get_square(position)
 
-        target = Vector2(square % 3, square // 3)
-        return abs(position.x - target.x) + abs(position.y - target.y)
+class Solver:
+    @dataclass
+    class Node:
+        f_cost: int
+        g_cost: int
+        grid: List[List[int]]
+        empty_position: Vector2
+        parent: Optional["Node"] = None
+        move: Optional[Vector2] = None
 
-    def manhattan_heuristic(self) -> int:
-        """Returns the manhattan distance of the puzzle.
-        The sum of the manhattan distances of all squares."""
-        distance = 0
-        for y in range(3):
-            for x in range(3):
-                position = Vector2(x, y)
-                distance += self.manhattan_distance(position)
+        def __init__(self, f_cost: int, g_cost: int, grid: List[List[int]], empty_position: Vector2):
+            self.f_cost = f_cost
+            self.g_cost = g_cost
+            self.grid = grid
+            self.empty_position = empty_position
 
-        return distance
+        def __lt__(self, other):
+            return self.f_cost < other
+
+        def __gt__(self, other):
+            return self.f_cost > other
+
+        def __eq__(self, other):
+            return self.grid == other.grid
+
+        def __hash__(self):
+            return hash(self.grid)
 
     @staticmethod
-    def manhattan_heuristic_grid(grid: List[List[int]]) -> int:
+    def manhattan_heuristic(grid: List[List[int]]) -> int:
         """Returns the manhattan distance of the given grid."""
         distance = 0
         for y in range(3):
@@ -154,8 +154,11 @@ class Puzzle:
 
         return distance
 
-    def try_move_simulation(self, grid: List[List[int]], empty_position: Vector2, direction: Vector2) -> tuple[List[List[int]], Vector2] | tuple[None, None]:
+    @staticmethod
+    def try_move_simulation(grid: List[List[int]], empty_position: Vector2, direction: Vector2 | Direction) -> tuple[List[List[int]], Vector2] | tuple[None, None]:
         """Simulates a move in the given grid and returns the new grid and empty position if the move is valid, None otherwise."""
+        if isinstance(direction, Direction):
+            direction = direction.value
         other_position = empty_position + direction
 
         if other_position.x < 0 or other_position.x >= 3 or other_position.y < 0 or other_position.y >= 3:
@@ -167,14 +170,13 @@ class Puzzle:
 
         return new_grid, other_position
 
-    def _grid_to_tuple(self, grid: Optional[List[List[int]]] = None):
+    @staticmethod
+    def _grid_to_tuple(grid: List[List[int]]):
         """Convert the grid to a tuple for use in a set (for visited states)."""
-        if grid:
-            return tuple(tuple(row) for row in grid)
+        return tuple(tuple(row) for row in grid)
 
-        return tuple(tuple(row) for row in self._grid)
-
-    def solve(self, apply: Optional[bool] = False) -> List[Vector2]:
+    @staticmethod
+    def solve(puzzle: Puzzle, apply: Optional[bool] = False) -> List[Vector2]:
         """Solves the puzzle using the A* algorithm with the manhattan heuristic.
         Returns the cost of the solution.
         _________________________________
@@ -183,44 +185,55 @@ class Puzzle:
         """
 
         pq = []
-        initial_state = [row[:] for row in self._grid]  # deep copy of the grid
+        initial_state = [row[:]
+                         for row in puzzle.grid]  # deep copy of the grid
+        initial_node = Solver.Node(
+            0 + Solver.manhattan_heuristic(initial_state), 0, initial_state, puzzle.empty_position)
 
         # f_cost, moves(the moves that were used to get there, the length of this list is the g_cost), grid, empty_position
-        heapq.heappush(pq, (0 + self.manhattan_heuristic(), [],
-                       initial_state, self._empty_position))
+        heapq.heappush(pq, initial_node)
 
         visited = set()
-        visited.add(self._grid_to_tuple())
+        visited.add(Solver._grid_to_tuple(initial_state))
 
         directions = [Direction.UP.value, Direction.DOWN.value,
                       Direction.LEFT.value, Direction.RIGHT.value]
 
         while pq:
-            f_cost, moves, grid, empty_position = heapq.heappop(pq)
-            g_cost = len(moves)
+            current_node = heapq.heappop(pq)
+            if current_node.g_cost == current_node.f_cost:
+                moves = []
+                n = current_node
+                while n.parent:
+                    moves.insert(0, n.move)
+                    n = n.parent
 
-            if g_cost == f_cost:
                 if apply:
-                    self._grid = grid
-                    self._empty_position = Vector2(0, 0)
+                    puzzle._grid = current_node.grid
+                    puzzle._empty_position = current_node.empty_position
 
                 return moves
 
             for direction in directions:
-                new_grid, new_empty_position = self.try_move_simulation(
-                    grid, empty_position, direction)
+                new_grid, new_empty_position = Solver.try_move_simulation(
+                    current_node.grid, current_node.empty_position, direction)
 
-                if new_grid is None:
+                if new_grid is None or new_empty_position is None:
                     continue
 
-                new_grid_tuple = self._grid_to_tuple(new_grid)
+                new_grid_tuple = Solver._grid_to_tuple(new_grid)
                 if new_grid_tuple in visited:
                     continue
 
                 visited.add(new_grid_tuple)
 
-                new_moves = moves + [direction]
-                heapq.heappush(pq, (g_cost + 1 + Puzzle.manhattan_heuristic_grid(new_grid),
-                                    new_moves, new_grid, new_empty_position))
+                new_f_cost = current_node.g_cost + 1 + \
+                    Solver.manhattan_heuristic(new_grid)
+                new_node = Solver.Node(
+                    new_f_cost, current_node.g_cost + 1, new_grid, new_empty_position)
+
+                new_node.parent = current_node
+                new_node.move = direction
+                heapq.heappush(pq, new_node)
 
         return []

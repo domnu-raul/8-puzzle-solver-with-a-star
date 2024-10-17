@@ -1,4 +1,4 @@
-from src.puzzle import Puzzle, Vector2, Direction
+from src.puzzle import Puzzle, Vector2, Direction, Solver
 
 
 def test_puzzle():
@@ -84,39 +84,6 @@ def test_move():
     ]
 
 
-def test_move_2():
-    puzzle = Puzzle([
-        [0, 4, 2],
-        [1, 3, 5],
-        [6, 7, 8]
-    ])
-
-    assert puzzle.move(Direction.UP) == False
-    assert puzzle.move(Direction.LEFT) == False
-    assert puzzle.move(Direction.RIGHT) == True
-    assert puzzle.move(Direction.DOWN) == True
-
-
-def test_try_move():
-    puzzle = Puzzle([
-        [1, 4, 2],
-        [3, 0, 5],
-        [6, 7, 8]
-    ])
-
-    assert puzzle.try_move(Direction.UP) == 2
-    assert puzzle.manhattan_heuristic() == 4
-
-    assert puzzle.try_move(Direction.DOWN) == 6
-    assert puzzle.manhattan_heuristic() == 4
-
-    assert puzzle.try_move(Direction.LEFT) == 4
-    assert puzzle.manhattan_heuristic() == 4
-
-    assert puzzle.try_move(Direction.RIGHT) == 6
-    assert puzzle.manhattan_heuristic() == 4
-
-
 def test_is_solved():
     puzzle = Puzzle([
         [0, 1, 2],
@@ -151,32 +118,47 @@ def test_scramble_puzzle_2():
     assert puzzle.is_solved == False
 
 
-def test_manhattan_distance():
-    puzzle = Puzzle([
-        [1, 2, 3],
-        [4, 5, 6],
-        [7, 8, 0]
-    ])
+def test_try_move_simulation():
+    grid = [
+        [0, 4, 2],
+        [1, 3, 5],
+        [6, 7, 8]
+    ]
+    empty_position = Vector2(0, 0)
 
-    assert puzzle.manhattan_distance(Vector2(0, 0)) == 1
-    assert puzzle.manhattan_distance(Vector2(2, 2)) == 4
-
-
-def test_manhattan_distance_2():
-    puzzle = Puzzle()
-
-    for x in range(3):
-        for y in range(3):
-            assert puzzle.manhattan_distance(Vector2(x, y)) == 0
+    assert Solver.try_move_simulation(
+        grid, empty_position, Direction.UP) == (None, None)
+    assert Solver.try_move_simulation(
+        grid, empty_position, Direction.LEFT) == (None, None)
+    assert Solver.try_move_simulation(
+        grid, empty_position, Direction.RIGHT) == (
+        [[4, 0, 2],
+         [1, 3, 5],
+         [6, 7, 8]], Vector2(1, 0)
+    )
+    assert Solver.try_move_simulation(
+        grid, empty_position, Direction.DOWN) == (
+        [[1, 4, 2],
+         [0, 3, 5],
+         [6, 7, 8]], Vector2(0, 1)
+    )
 
 
 def test_manhattan_heuristic():
 
-    puzzle = Puzzle([[1, 4, 2],
-                     [0, 3, 5],
-                     [6, 7, 8]])
+    grid = [[1, 4, 2],
+            [0, 3, 5],
+            [6, 7, 8]]
 
-    assert puzzle.manhattan_heuristic() == 4
+    assert Solver.manhattan_heuristic(grid) == 4
+
+
+def test_manhattan_heuristic_2():
+    grid = [[1, 0, 2],
+            [3, 4, 5],
+            [6, 7, 8]]
+
+    assert Solver.manhattan_heuristic(grid) == 2
 
 
 def test_solve():
@@ -186,7 +168,7 @@ def test_solve():
         [6, 7, 8]
     ])
 
-    moves = puzzle.solve(True)
+    moves = Solver.solve(puzzle, True)
     assert len(moves) == 2
     assert puzzle.is_solved == True
 
@@ -198,7 +180,7 @@ def test_solve_2():
         [6, 8, 0]
     ])
 
-    moves = puzzle.solve(True)
+    moves = Solver.solve(puzzle, True)
     assert len(moves) == 4
     assert puzzle.is_solved == True
 
@@ -207,7 +189,7 @@ def test_solve_3():
     puzzle = Puzzle()
     puzzle.scramble(4)
 
-    puzzle.solve(False)
+    moves = Solver.solve(puzzle, False)
     assert puzzle.is_solved == False
 
 
@@ -218,6 +200,6 @@ def test_solve_4():
         [8, 3, 1]
     ])
 
-    moves = puzzle.solve(True)
+    moves = Solver.solve(puzzle, True)
     assert len(moves) == 26
     assert puzzle.is_solved == True
