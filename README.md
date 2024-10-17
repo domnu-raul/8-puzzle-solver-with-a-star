@@ -5,7 +5,7 @@ This project is a simple, interactive 8-Puzzle game that you can play, scramble,
 
 - Interactive Gameplay: Play the 8-Puzzle yourself, making moves with your keyboard (WASD controls).
 - Scramble & Solve: Randomize the puzzle and let the A* algorithm find the optimal solution.
-- Efficient Solving: Utilizes the A* algorithm with Manhattan distance, ensuring the puzzle is solved in the shortest possible time.
+- Efficient Solving: Utilizes the A* algorithm with Manhattan distance, ensuring the puzzle is solved in optimal time.
 
 ## Example
 
