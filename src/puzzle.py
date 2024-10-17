@@ -1,7 +1,9 @@
 from enum import Enum
-from typing import List, Optional, Tuple
+from typing import List, Optional
 from random import choice
 import heapq
+
+from copy import deepcopy
 from dataclasses import dataclass
 
 
@@ -24,9 +26,6 @@ class Vector2:
 
     def __str__(self):
         return f"({self.x}, {self.y})"
-
-    def __lt__(self, other):
-        return True
 
     def __repr__(self):
         return str(self)
@@ -184,12 +183,13 @@ class Solver:
         """
 
         pq = []
-        initial_state = [row[:]
-                         for row in puzzle.grid]  # deep copy of the grid
+        initial_state = deepcopy(puzzle.grid)
         initial_node = Solver.Node(
-            0 + Solver.manhattan_heuristic(initial_state), 0, initial_state, puzzle.empty_position)
+            0 + Solver.manhattan_heuristic(initial_state),
+            0,
+            initial_state,
+            puzzle.empty_position)
 
-        # f_cost, moves(the moves that were used to get there, the length of this list is the g_cost), grid, empty_position
         heapq.heappush(pq, initial_node)
 
         visited = set()
@@ -200,10 +200,10 @@ class Solver:
 
         while pq:
             current_node = heapq.heappop(pq)
-            if current_node.g_cost == current_node.f_cost:
-                moves = []
+            if current_node.g_cost == current_node.f_cost:  # g_cost == f_cost means that the puzzle is solved
+                moves = []  # the moves that were used to solve the puzzle
                 n = current_node
-                while n.parent:
+                while n.parent:  # backtracking
                     moves.insert(0, n.empty_position - n.parent.empty_position)
                     n = n.parent
 
