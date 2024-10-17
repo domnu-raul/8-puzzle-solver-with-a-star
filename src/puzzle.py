@@ -95,8 +95,8 @@ class Puzzle:
         return True
 
     def scramble(self, moves: int = 96) -> None:
-        """Scrambles the puzzle by making a given number(default 48) of random moves.
-        If the puzzle is already solved, it will scramble it again."""
+        """Scrambles the puzzle by making a given number(default 96) of random moves.
+        If the puzzle ends up solved, it will be scrambled again."""
         for _ in range(moves):
             directions = [Direction.UP, Direction.DOWN,
                           Direction.LEFT, Direction.RIGHT]
@@ -116,6 +116,10 @@ class Puzzle:
 class Solver:
     @dataclass
     class Node:
+        """
+        Represents a node in the A* algorithm. Contains the f_cost, g_cost, grid, empty_position and parent of the node.
+        The parent is used to backtrack the moves that were used to solve the puzzle.
+        """
         f_cost: int
         g_cost: int
         grid: List[List[int]]
@@ -142,7 +146,10 @@ class Solver:
 
     @staticmethod
     def manhattan_heuristic(grid: List[List[int]]) -> int:
-        """Returns the manhattan distance of the given grid."""
+        """
+        Returns the manhattan distance of the given grid.
+        The manhattan distance is the sum of the distances of each square to its target position.
+        """
         distance = 0
         for y in range(3):
             for x in range(3):
@@ -153,14 +160,14 @@ class Solver:
         return distance
 
     @staticmethod
-    def try_move_simulation(grid: List[List[int]], empty_position: Vector2, direction: Vector2 | Direction) -> tuple[List[List[int]], Vector2] | tuple[None, None]:
+    def try_move_simulation(grid: List[List[int]], empty_position: Vector2, direction: Vector2 | Direction) -> tuple[List[List[int]], Vector2] | None:
         """Simulates a move in the given grid and returns the new grid and empty position if the move is valid, None otherwise."""
         if isinstance(direction, Direction):
             direction = direction.value
         other_position = empty_position + direction
 
         if other_position.x < 0 or other_position.x >= 3 or other_position.y < 0 or other_position.y >= 3:
-            return None, None
+            return None
 
         new_grid = [row[:] for row in grid]
         new_grid[empty_position.y][empty_position.x] = new_grid[other_position.y][other_position.x]
@@ -170,7 +177,7 @@ class Solver:
 
     @staticmethod
     def _grid_to_tuple(grid: List[List[int]]):
-        """Convert the grid to a tuple for use in a set (for visited states)."""
+        """Convert the grid to a tuple for use in a set of visited states."""
         return tuple(tuple(row) for row in grid)
 
     @staticmethod
@@ -185,7 +192,7 @@ class Solver:
         pq = []
         initial_state = deepcopy(puzzle.grid)
         initial_node = Solver.Node(
-            0 + Solver.manhattan_heuristic(initial_state),
+            Solver.manhattan_heuristic(initial_state),
             0,
             initial_state,
             puzzle.empty_position)
@@ -214,11 +221,14 @@ class Solver:
                 return moves
 
             for direction in directions:
-                new_grid, new_empty_position = Solver.try_move_simulation(
+
+                move = Solver.try_move_simulation(
                     current_node.grid, current_node.empty_position, direction)
 
-                if new_grid is None or new_empty_position is None:
+                if move is None:
                     continue
+
+                new_grid, new_empty_position = move
 
                 new_grid_tuple = Solver._grid_to_tuple(new_grid)
                 if new_grid_tuple in visited:

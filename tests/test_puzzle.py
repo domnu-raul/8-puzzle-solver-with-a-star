@@ -127,9 +127,9 @@ def test_try_move_simulation():
     empty_position = Vector2(0, 0)
 
     assert Solver.try_move_simulation(
-        grid, empty_position, Direction.UP) == (None, None)
+        grid, empty_position, Direction.UP) == None
     assert Solver.try_move_simulation(
-        grid, empty_position, Direction.LEFT) == (None, None)
+        grid, empty_position, Direction.LEFT) == None
     assert Solver.try_move_simulation(
         grid, empty_position, Direction.RIGHT) == (
         [[4, 0, 2],
