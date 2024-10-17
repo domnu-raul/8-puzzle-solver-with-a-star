@@ -1,5 +1,5 @@
 import pygame
-from src.puzzle import Puzzle, Direction
+from src.puzzle import Puzzle, Direction, Solver
 
 pygame.init()
 screen = pygame.display.set_mode((1280, 720))
@@ -54,7 +54,7 @@ while running:
                 moves = []
                 can_move = True
             elif solve_button.collidepoint(event.pos):
-                moves = puzzle.solve()
+                moves = Solver.solve(puzzle)
                 can_move = False
         elif event.type == pygame.MOUSEMOTION:
             if scramble_button.collidepoint(event.pos):

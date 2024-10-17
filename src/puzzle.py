@@ -122,7 +122,6 @@ class Solver:
         grid: List[List[int]]
         empty_position: Vector2
         parent: Optional["Node"] = None
-        move: Optional[Vector2] = None
 
         def __init__(self, f_cost: int, g_cost: int, grid: List[List[int]], empty_position: Vector2):
             self.f_cost = f_cost
@@ -205,7 +204,7 @@ class Solver:
                 moves = []
                 n = current_node
                 while n.parent:
-                    moves.insert(0, n.move)
+                    moves.insert(0, n.empty_position - n.parent.empty_position)
                     n = n.parent
 
                 if apply:
@@ -233,7 +232,6 @@ class Solver:
                     new_f_cost, current_node.g_cost + 1, new_grid, new_empty_position)
 
                 new_node.parent = current_node
-                new_node.move = direction
                 heapq.heappush(pq, new_node)
 
         return []
